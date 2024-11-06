@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:taskwave/screens/splash.dart';
 
 void main() {
   runApp(
@@ -14,6 +15,9 @@ class TaskWave extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return MaterialApp(
+      home: const SplashScreen(),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }
