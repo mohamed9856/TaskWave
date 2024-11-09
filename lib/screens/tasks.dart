@@ -13,11 +13,13 @@ class TasksScreen extends ConsumerStatefulWidget {
 
 class _TasksScreenState extends ConsumerState<TasksScreen> {
   bool showDeletedTasks = false;
+  bool showCompletedTasks = false;
 
   @override
   Widget build(BuildContext context) {
     final ongoingTasks = ref.watch(ongoingTasksProvider);
     final finishedTasks = ref.watch(deletedTasksProvider);
+    final completedTasks = ref.watch(completedTasksProvider);
     final addTitleController = TextEditingController();
 
     void deleteTask(Task task) {
@@ -26,11 +28,24 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
         ref.read(ongoingTasksProvider.notifier).removeTask(task.id);
       });
     }
+    void editTask(String id, Task task) {
+      setState(() {
+        ref.read(ongoingTasksProvider.notifier).editTask(id, task);
+      });
+    }
 
     void toggleTaskCompletion(Task task) {
       setState(() {
         task.isFinished = !task.isFinished;
+        if (task.isFinished) {
+          ref.read(completedTasksProvider.notifier).addTask(task);
+
+        } else {
+          ref.read(completedTasksProvider.notifier).removeTask(task.id);
+        }
+            
       });
+        
     }
 
     void deleteAllTasks() {
@@ -76,6 +91,17 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                 Navigator.pop(context);
               },
             ),
+            ListTile(
+              leading: Icon(Icons.check_circle),
+              title: Text('Completed Tasks'),
+              onTap: () {
+                setState(() {
+                  showCompletedTasks = true;
+                });
+                Navigator.pop(context);
+                }
+            ),
+                  
           ],
         ),
       ),
@@ -101,6 +127,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                 ),
               ),
             ),
+          
+            
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -147,6 +175,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
       body: ListView.builder(
         itemCount:
             showDeletedTasks ? finishedTasks.length : ongoingTasks.length,
+        
+            
         itemBuilder: (context, index) {
           final task =
               showDeletedTasks ? finishedTasks[index] : ongoingTasks[index];
@@ -211,6 +241,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
               ),
             );
           }
+        
           return Dismissible(
             key: ValueKey(task.id),
             onDismissed: (direction) {
@@ -225,7 +256,10 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                 color: Colors.white,
               ),
             ),
-            child: Container(
+            child: Stack(
+              children:[
+                Container(
+                  height: 100.0,
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Colors.amber,
@@ -284,6 +318,53 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                 ),
               ),
             ),
+            Positioned(
+              right: 10,
+              top: 50,
+              child: GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Edit Task"),
+                        content: TextField(
+                          controller: addTitleController,
+                          decoration: InputDecoration(
+                            hintText: "Enter task details",
+                          ),
+                        ),
+                    
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              editTask(task.id, Task(
+                                id: task.id,
+                                title: addTitleController.text,
+                              ));
+                            },
+                            child: Text('Edit'),
+                          ),
+                        ],
+                      );
+                    }
+                  );
+                },
+                child: Icon(Icons.edit),
+              ),
+            ),
+                              
+
+          ],
+            ),
+            
           );
         },
       ),
