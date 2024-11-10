@@ -21,15 +21,17 @@ class ViewTask extends StatelessWidget {
         elevation: 5,
         backgroundColor: Colors.blue,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Text(
-          task.title,
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            letterSpacing: 1.5,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text(
+            task.title,
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              letterSpacing: 1.5,
+            ),
           ),
         ),
       ),

@@ -25,9 +25,11 @@ class OngoingTasksNotifier extends StateNotifier<List<Task>> {
   void removeTask(String id) {
     state = state.where((task) => task.id != id).toList();
   }
+
   void editTask(String id, Task task) {
     state = state.map((t) => t.id == id ? task : t).toList();
   }
+
   void completeTask(Task task) {
     state = state.where((t) => t.id != task.id).toList();
   }
@@ -50,6 +52,10 @@ class CompletedTasksNotifier extends StateNotifier<List<Task>> {
 
   void addTask(Task task) {
     state = [...state, task];
+
+  }
+  void editTask(String id, Task task) {
+    state = state.map((t) => t.id == id ? task : t).toList();
   }
 
   void removeTask(String id) {
